@@ -1,64 +1,55 @@
-var XLSX = require('xlsx');
-const fs = require('fs');
+let xlsx = require('xlsx');
+let fs = require('fs');
 var testJMX_FilePath = 'TestPlan.jmx'
 
-async function jmxUpdate() {
-
-    try{
-        var workbook = XLSX.readFile('./ThreadController.xls'); //Reading the excel data file
-        var range = XLSX.utils.decode_range(workbook.Sheets[workbook.SheetNames[0]]['!ref']);         //Recipients
-       // var secondCell = workbook.Sheets[workbook.SheetNames[0]][XLSX.utils.encode_cell({ r: 1, c: 1 })];
-        //var firstCell;
-        var ChangeNodeName
-        var ChangeNodeValue
-        var serviceName
+function jmxUpdate() {
+    try {
+        var workbook = xlsx.readFile('./ThreadController.xls'); //Reading the excel data file
+        var range = xlsx.utils.decode_range(workbook.Sheets[workbook.SheetNames[0]]['!ref']); //Recipients
+        var newValue = fs.readFileSync(testJMX_FilePath, "utf8");
 
         for (let rowNum = range.s.r; rowNum <= range.e.r; rowNum++) {
-            
-            ChangeNodeName = workbook.Sheets[workbook.SheetNames[0]][XLSX.utils.encode_cell({ r: rowNum, c: 0 })];
-            //console.log(ChangeNodeName.v);
-            if (ChangeNodeName.v == 'ThreadName') {
-                serviceName = workbook.Sheets[workbook.SheetNames[0]][XLSX.utils.encode_cell({ r: rowNum, c: 1 })];
-                //console.log(serviceName.v);
-                continue;
+            var ChangeNodeName = workbook.Sheets[workbook.SheetNames[0]][xlsx.utils.encode_cell({ r: rowNum, c: 0 })].v;
+            var ChangeNodeValue = workbook.Sheets[workbook.SheetNames[0]][xlsx.utils.encode_cell({ r: rowNum, c: 1 })].v;
+
+            switch (ChangeNodeName) {
+                case 'SBS_GetAccountServiceStartupTime':
+                    newValue = newValue.replace(/SBS_GetAccountServiceStartupTime/, ChangeNodeValue);
+                    break;
+                case 'SBS_GetAccountServiceThreadCount':
+                    newValue = newValue.replace(/SBS_GetAccountServiceThreadCount/, ChangeNodeValue);
+                    break;
+                case 'SBS_GetAccountServiceThreadRampUpTime':
+                    newValue = newValue.replace(/SBS_GetAccountServiceThreadRampUpTime/, ChangeNodeValue);
+                    break;
+                case 'SBS_GetUnitHoldingStartupTime':
+                    newValue = newValue.replace(/SBS_GetUnitHoldingStartupTime/, ChangeNodeValue);
+                    break;
+                case 'SBS_GetUnitHoldingThreadCount':
+                    newValue = newValue.replace(/SBS_GetUnitHoldingThreadCount/, ChangeNodeValue);
+                    break;
+                case 'SBS_GetUnitHoldingThreadRampUpTime':
+                    newValue = newValue.replace(/SBS_GetUnitHoldingThreadRampUpTime/, ChangeNodeValue);
+                    break;
+                case 'SBS_GetClientHoldingThreadCount':
+                    newValue = newValue.replace(/SBS_GetClientHoldingThreadCount/, ChangeNodeValue);
+                    break;
+                case 'SBS_GetClientThreadCount':
+                    newValue = newValue.replace(/SBS_GetClientThreadCount/, ChangeNodeValue);
+                    break;
+                case 'SBS_GetClientThreadRampUpTime':
+                    newValue = newValue.replace(/SBS_GetClientThreadRampUpTime/, ChangeNodeValue);
+                    break;
+                default:
+                    console.log('There is no tag found for replacement: ' + ChangeNodeName);
             }
-           ChangeNodeValue = workbook.Sheets[workbook.SheetNames[0]][XLSX.utils.encode_cell({ r: rowNum, c: 1 })];
-           //console.log(ChangeNodeValue.v);
-           var nodeValueToBeUpdate = serviceName.v+ChangeNodeName.v;
-           console.log(nodeValueToBeUpdate);
-
-
-           fs.readFile(testJMX_FilePath, 'utf-8', function(err, data) {
-            if (err) throw err;
-            var newValue = data.replace('/'+ nodeValueToBeUpdate +'/gim', ChangeNodeValue.v);
-        
-            fs.writeFile(testJMX_FilePath, newValue, 'utf-8', function(err, data) {
-                if (err) throw err;
-                console.log('Done!');
-            })
-            //sleep(1);
-            })
-        
-
         }
-    }catch(err){
+        new fs.writeFileSync(testJMX_FilePath, newValue);
+        console.log('Done!')
+
+    } catch (err) {
         console.log("Error in updating the Jmx file due to error: " + err);
     }
-    }
+}
 
-
-    // (async function () {
-    //     const fileContent = await fs.readFile(testJMX_FilePath);
-    //     const records = parse(fileContent, {columns: true});
-    //     console.log(records)
-    // })();
-
-
-async function sleep(msec) {
-        console.log("Sleeping for Miliseconds " + msec); 
-        return new Promise(resolve => setTimeout(resolve, msec));
-    }
-
-
-
-    jmxUpdate()
+jmxUpdate()
