@@ -12,14 +12,14 @@ Command to run Script
 node .\jmx_updater_FromXLS.js
 
 
+		PackToRun	Soak
+JMeterScriptLocation	C:\-----\----
+ReportLocation	C:\-----\----\44601.0882049769
+RunDate&Time	=Now()
 
-SBS_GetAccountServiceStartupTime	5
-SBS_GetAccountServiceThreadCount	2
-SBS_GetAccountServiceThreadRampUpTime	10
-SBS_GetUnitHoldingStartupTime	12
-SBS_GetUnitHoldingThreadCount	33
-SBS_GetUnitHoldingThreadRampUpTime	44
-SBS_GetClientHoldingThreadCount	55
-SBS_GetClientThreadCount	66
-SBS_GetClientThreadRampUpTime	77
-![image](https://user-images.githubusercontent.com/43807077/152687098-0cd237f1-95d3-4608-913e-266d48e75175.png)
+        <stringProp name="LoopController.loops">Get----ServiceStartupTime</stringProp>
+-
+		<stringProp name="ThreadGroup.ramp_time">PackToRun</stringProp>
+		<stringProp name="ThreadGroup.ramp_time">JMeterScriptLocation</stringProp>
+		<stringProp name="ThreadGroup.ramp_time">ReportLocation</stringProp>
+		<stringProp name="ThreadGroup.ramp_time">RunDate&Time</stringProp>
